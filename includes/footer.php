@@ -33,8 +33,8 @@
           <ul>
             <li><a href="about.php">About Us</a></li>
             <li><a href="contact.php">Contact</a></li>
-            <li><a href="#">Careers</a></li>
-            <li><a href="#">Blog</a></li>
+            <li><a href="profile.php">My Account</a></li>
+            <li><a href="my-orders.php">My Orders</a></li>
           </ul>
         </div>
 

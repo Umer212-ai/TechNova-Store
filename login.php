@@ -173,7 +173,7 @@
 
               <!-- Register Link -->
               <p class="tn-login-register">
-                Don't have an account? <a href="#">Create one now</a>
+                Don't have an account? <a href="register.php">Create one now</a>
               </p>
 
             </form>

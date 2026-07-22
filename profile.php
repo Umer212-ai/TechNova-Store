@@ -197,7 +197,7 @@
               <h5 class="tn-profile-card-title mb-0">
                 <i class="bi bi-receipt me-2"></i> Recent Orders
               </h5>
-              <a href="#" class="tn-link-arrow">View All <i class="bi bi-arrow-right"></i></a>
+              <a href="my-orders.php" class="tn-link-arrow">View All <i class="bi bi-arrow-right"></i></a>
             </div>
             <!-- Dynamic Recent Orders -->
             <div class="tn-profile-orders-table">
