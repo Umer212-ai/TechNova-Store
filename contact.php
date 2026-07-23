@@ -1,8 +1,29 @@
 <?php
 // contact.php - TechNova Store Contact Page
-// Backend integration will be added later.
-// include 'includes/config.php';
-// include 'includes/db.php';
+include 'includes/db.php';
+
+$success = false;
+$error = '';
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $name    = trim($_POST['name'] ?? '');
+    $email   = trim($_POST['email'] ?? '');
+    $subject = trim($_POST['subject'] ?? '');
+    $message = trim($_POST['message'] ?? '');
+
+    if (empty($name) || empty($email) || empty($subject) || empty($message)) {
+        $error = 'Please fill all required fields.';
+    } else {
+        $sql = "INSERT INTO contact_messages (name, email, subject, message) 
+                VALUES ('$name', '$email', '$subject', '$message')";
+        
+        if (mysqli_query($conn, $sql)) {
+            $success = true;
+        } else {
+            $error = 'Failed to send message. Please try again.';
+        }
+    }
+}
 ?>
 <?php include 'includes/header.php'; ?>
 <body>
@@ -132,11 +153,18 @@
             </div>
 
             <!-- Dynamic Contact Form -->
-            <form class="tn-contact-form" id="tnContactForm">
-              <div class="tn-contact-alert d-none" id="tnContactAlert">
+            <form class="tn-contact-form" id="tnContactForm" method="POST" action = "">
+              <?php if ($success): ?>
+             <div class="tn-contact-alert" style="display:block; background:#d1fae5; color:#065f46; padding:15px; border-radius:10px; margin-bottom:20px;">
                 <i class="bi bi-check-circle-fill me-2"></i>
-                <span id="tnContactAlertText"></span>
-              </div>
+                 <span>Thank you! Your message has been sent successfully. We'll get back to you soon.</span>
+               </div>
+              <?php elseif ($error): ?>
+             <div class="tn-contact-alert" style="display:block; background:#fee2e2; color:#dc2626; padding:15px; border-radius:10px; margin-bottom:20px;">
+                 <i class="bi bi-exclamation-circle-fill me-2"></i>
+                  <span><?php echo $error; ?></span>
+               </div>
+              <?php endif; ?>
 
               <div class="row g-4">
                 <div class="col-md-6">
@@ -144,7 +172,7 @@
                     <label class="tn-form-label" for="tnContactName">Full Name <span class="tn-required">*</span></label>
                     <div class="tn-contact-input-wrap">
                       <i class="bi bi-person"></i>
-                      <input type="text" class="form-control tn-form-input tn-contact-input" id="tnContactName" placeholder="John Doe" required />
+                      <input type="text" class="form-control tn-form-input tn-contact-input" name = "name" id="tnContactName" placeholder="John Doe" required />
                     </div>
                   </div>
                 </div>
@@ -153,7 +181,7 @@
                     <label class="tn-form-label" for="tnContactEmail">Email Address <span class="tn-required">*</span></label>
                     <div class="tn-contact-input-wrap">
                       <i class="bi bi-envelope"></i>
-                      <input type="email" class="form-control tn-form-input tn-contact-input" id="tnContactEmail" placeholder="john@example.com" required />
+                      <input type="email" class="form-control tn-form-input tn-contact-input" name = "email" id="tnContactEmail" placeholder="john@example.com" required />
                     </div>
                   </div>
                 </div>
@@ -162,7 +190,7 @@
                     <label class="tn-form-label" for="tnContactSubject">Subject <span class="tn-required">*</span></label>
                     <div class="tn-contact-input-wrap">
                       <i class="bi bi-chat-left-text"></i>
-                      <input type="text" class="form-control tn-form-input tn-contact-input" id="tnContactSubject" placeholder="How can we help you?" required />
+                      <input type="text" class="form-control tn-form-input tn-contact-input" name = "subject" id="tnContactSubject" placeholder="How can we help you?" required />
                     </div>
                   </div>
                 </div>
@@ -171,7 +199,7 @@
                     <label class="tn-form-label" for="tnContactMessage">Message <span class="tn-required">*</span></label>
                     <div class="tn-contact-textarea-wrap">
                       <i class="bi bi-pencil"></i>
-                      <textarea class="form-control tn-form-input tn-contact-textarea" id="tnContactMessage" rows="6" placeholder="Write your message here..." required></textarea>
+                      <textarea class="form-control tn-form-input tn-contact-textarea" name="message" id="tnContactMessage" rows="6" placeholder="Write your message here..." required></textarea>
                     </div>
                   </div>
                 </div>

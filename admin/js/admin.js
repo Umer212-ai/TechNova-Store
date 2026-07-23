@@ -309,18 +309,7 @@
     });
   }
 
-  if (modalConfirm) {
-    modalConfirm.addEventListener('click', function (e) {
-      e.preventDefault();
-      if (activeDeleteBtn) {
-        var id = activeDeleteBtn.getAttribute('data-id');
-        if (id) {
-          window.location.href = 'categories.php?delete=' + id;
-        }
-      }
-      closeDeleteModal();
-    });
-  }
+  
 
   /* ---------- Pagination UI ---------- */
   var pageBtns = $$('.tn-admin-page-btn');
@@ -1102,20 +1091,7 @@
     });
   }
 
-  if (productsModalConfirm) {
-    productsModalConfirm.addEventListener('click', function () {
-      if (productsActiveDeleteBtn) {
-        var row = productsActiveDeleteBtn.closest('tr');
-        if (row) {
-          row.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
-          row.style.opacity = '0';
-          row.style.transform = 'translateX(30px)';
-          setTimeout(function () { row.remove(); filterProducts(); }, 300);
-        }
-      }
-      closeProductsDeleteModal();
-    });
-  }
+ 
 
   /* ---------- Pagination Active State ---------- */
   var productsPageBtns = $$('.tn-admin-page-btn');

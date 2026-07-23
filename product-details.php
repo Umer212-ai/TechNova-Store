@@ -446,7 +446,13 @@ $stars_empty = 5 - $stars_full - ($stars_half ? 1 : 0);
                 <input type="number" class="tn-pd-qty-input" id="tnQtyInput" value="1" min="1" max="10" aria-label="Quantity" />
                 <button class="tn-pd-qty-btn" id="tnQtyPlus" aria-label="Increase quantity"><i class="bi bi-plus"></i></button>
               </div>
-              <button class="btn tn-btn-primary tn-pd-btn-cart" id="tnAddToCart"><i class="bi bi-bag-plus me-2"></i> Add to Cart</button>
+             <form method="POST" action="add-to-cart.php" style="display:inline;" id="addToCartForm">
+                <input type="hidden" name="product_id" value="<?php echo $id; ?>">
+                <input type="hidden" name="quantity" value="1" id="hiddenQty">
+                <button type="submit" class="btn tn-btn-primary tn-pd-btn-cart">
+                    <i class="bi bi-bag-plus me-2"></i> Add to Cart
+                </button>
+            </form>
               <button class="btn tn-btn-ghost tn-pd-btn-buy"><i class="bi bi-lightning-charge me-2"></i> Buy Now</button>
               <button class="tn-pd-btn-wish" id="tnPdWishlist" aria-label="Add to wishlist"><i class="bi bi-heart"></i></button>
             </div>
@@ -665,27 +671,24 @@ $stars_empty = 5 - $stars_full - ($stars_half ? 1 : 0);
         });
       });
 
-      /* ---- Quantity ---- */
-      var qtyInput = document.getElementById('tnQtyInput');
-      document.getElementById('tnQtyMinus').addEventListener('click', function () {
-        var v = parseInt(qtyInput.value) || 1;
-        if (v > 1) qtyInput.value = v - 1;
-      });
-      document.getElementById('tnQtyPlus').addEventListener('click', function () {
-        var v = parseInt(qtyInput.value) || 1;
-        if (v < 10) qtyInput.value = v + 1;
-      });
+     /* ---- Quantity ---- */
+          var qtyInput = document.getElementById('tnQtyInput');
+          var hiddenQty = document.getElementById('hiddenQty');
 
-      /* ---- Add to cart animation ---- */
-      var addBtn = document.getElementById('tnAddToCart');
-      addBtn.addEventListener('click', function () {
-        addBtn.classList.add('tn-btn-loading');
-        addBtn.innerHTML = '<i class="bi bi-check-lg me-1"></i> Added!';
-        setTimeout(function () {
-          addBtn.classList.remove('tn-btn-loading');
-          addBtn.innerHTML = '<i class="bi bi-bag-plus me-2"></i> Add to Cart';
-        }, 1800);
-      });
+          // Quantity change hone par hidden input update karo
+          qtyInput.addEventListener('input', function() {
+              hiddenQty.value = qtyInput.value;
+          });
+
+          document.getElementById('tnQtyMinus').addEventListener('click', function () {
+              var v = parseInt(qtyInput.value) || 1;
+              if (v > 1) { qtyInput.value = v - 1; hiddenQty.value = qtyInput.value; }
+          });
+          document.getElementById('tnQtyPlus').addEventListener('click', function () {
+              var v = parseInt(qtyInput.value) || 1;
+              if (v < 10) { qtyInput.value = v + 1; hiddenQty.value = qtyInput.value; }
+          });
+    
 
       /* ---- Wishlist toggle ---- */
       var wishBtn = document.getElementById('tnPdWishlist');

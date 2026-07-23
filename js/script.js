@@ -1184,79 +1184,10 @@
    ========================================================= */
 (function () {
   "use strict";
+  // ... sab kuch ...
+})(); // ← CLOSING
 
-  /* ---------- Contact Form Submit ---------- */
-  var contactForm = document.getElementById("tnContactForm");
-  var contactAlert = document.getElementById("tnContactAlert");
-  var contactAlertText = document.getElementById("tnContactAlertText");
-  var contactSubmit = document.getElementById("tnContactSubmit");
-
-  function showContactAlert(msg, type) {
-    if (!contactAlert || !contactAlertText) return;
-    contactAlertText.textContent = msg;
-    contactAlert.className = "tn-contact-alert tn-contact-alert-" + type;
-  }
-
-  function isValidEmail(email) {
-    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-  }
-
-  if (contactForm) {
-    contactForm.addEventListener("submit", function (e) {
-      e.preventDefault();
-
-      var name = document.getElementById("tnContactName");
-      var email = document.getElementById("tnContactEmail");
-      var subject = document.getElementById("tnContactSubject");
-      var message = document.getElementById("tnContactMessage");
-
-      var nameVal = name ? name.value.trim() : "";
-      var emailVal = email ? email.value.trim() : "";
-      var subjectVal = subject ? subject.value.trim() : "";
-      var messageVal = message ? message.value.trim() : "";
-
-      /* Hide previous alert */
-      if (contactAlert) contactAlert.classList.add("d-none");
-
-      /* Validation */
-      if (!nameVal || !emailVal || !subjectVal || !messageVal) {
-        showContactAlert("Please fill in all required fields.", "error");
-        if (contactAlert) contactAlert.classList.remove("d-none");
-        return;
-      }
-
-      if (!isValidEmail(emailVal)) {
-        showContactAlert("Please enter a valid email address.", "error");
-        if (contactAlert) contactAlert.classList.remove("d-none");
-        return;
-      }
-
-      if (messageVal.length < 10) {
-        showContactAlert("Please enter at least 10 characters in your message.", "error");
-        if (contactAlert) contactAlert.classList.remove("d-none");
-        return;
-      }
-
-      /* Show loading state */
-      contactSubmit.classList.add("tn-contact-btn-loading");
-      contactSubmit.disabled = true;
-
-      /* Simulate form submission — Dynamic Contact Form: replace with real backend POST */
-      setTimeout(function () {
-        contactSubmit.classList.remove("tn-contact-btn-loading");
-        contactSubmit.disabled = false;
-
-        showContactAlert("Your message has been sent successfully! We'll get back to you within 24 hours.", "success");
-        if (contactAlert) contactAlert.classList.remove("d-none");
-
-        contactForm.reset();
-
-        setTimeout(function () {
-          if (contactAlert) contactAlert.classList.add("d-none");
-        }, 5000);
-      }, 1800);
-    });
-  }
+ 
 
   /* ---------- FAQ Accordion ---------- */
   var faqItems = document.querySelectorAll(".tn-contact-faq-item");
@@ -1283,5 +1214,5 @@
       }
     });
   });
-})();
+
 

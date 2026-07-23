@@ -1,8 +1,36 @@
 <?php
-// cart.php - TechNova Store Shopping Cart Page
-// Backend integration will be added later.
-// include 'includes/config.php';
-// include 'includes/db.php';
+
+include 'includes/db.php';
+session_start();
+
+// TEMPORARY: Test ke liye user_id = 1 set karo
+// $_SESSION['user_id'] = 1;  // ← TEST LINE
+
+$user_id = $_SESSION['user_id'] ?? 0;
+
+
+$cart_items = [];
+$subtotal = 0;
+$total_items = 0;
+
+if ($user_id > 0) {
+    $query = "SELECT c.*, p.product_name, p.price, p.image 
+              FROM cart c 
+              JOIN products p ON c.product_id = p.id 
+              WHERE c.user_id = $user_id";
+    $cart_result = mysqli_query($conn, $query);
+    
+    while ($row = mysqli_fetch_assoc($cart_result)) {
+        $row['total'] = $row['price'] * $row['quantity'];
+        $subtotal += $row['total'];
+        $total_items += $row['quantity'];
+        $cart_items[] = $row;
+    }
+}
+
+$shipping = $subtotal > 99 ? 0 : 9.99;
+$tax = round($subtotal * 0.08, 2);
+$grand_total = $subtotal + $shipping + $tax;
 ?>
 <?php include 'includes/header.php'; ?>
 <body>
@@ -32,7 +60,7 @@
       <span class="tn-eyebrow"><span class="tn-dot"></span> Your Cart</span>
       <h1 class="tn-page-title">Shopping Cart</h1>
       <!-- Dynamic Cart Count -->
-      <p class="tn-page-sub">You have <strong>3 items</strong> in your cart</p>
+    <p class="tn-page-sub">You have <strong><?php echo $total_items; ?> items</strong> in your cart</p>
     </div>
   </section>
 
@@ -51,127 +79,43 @@
               <!-- Dynamic Cart Items -->
               <!-- Example cart item (repeat for each product): -->
 
-              <!-- Cart Item 1 -->
-              <div class="tn-cart-item" data-cart-item="1">
+            
+              <?php if (!empty($cart_items)): ?>
+              <?php foreach ($cart_items as $item): ?>
+              <div class="tn-cart-item" data-cart-item="<?php echo $item['id']; ?>">
                 <div class="tn-cart-item-img">
-                  <a href="product-details.php?id=1">
-                    <img src="https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?auto=format&fit=crop&w=300&q=80" alt="Nova Phone 15 Pro" />
+                  <a href="product-details.php?id=<?php echo $item['product_id']; ?>">
+                    <img src="<?php echo $item['image'] ?: 'https://via.placeholder.com/300'; ?>" alt="<?php echo $item['product_name']; ?>" />
                   </a>
                 </div>
                 <div class="tn-cart-item-info">
-                  <span class="tn-product-cat">Smartphones</span>
                   <h6 class="tn-cart-item-name">
-                    <a href="product-details.php?id=1">Nova Phone 15 Pro</a>
+                    <a href="product-details.php?id=<?php echo $item['product_id']; ?>"><?php echo $item['product_name']; ?></a>
                   </h6>
-                  <span class="tn-cart-item-variant">Color: Space Black</span>
-                  <span class="tn-cart-item-price-mobile d-lg-none">$1,099</span>
+                  <span class="tn-cart-item-price-mobile d-lg-none">$<?php echo number_format($item['price'], 2); ?></span>
                 </div>
                 <div class="tn-cart-item-price d-none d-lg-flex">
-                  <strong>$1,099</strong>
+                  <strong>$<?php echo number_format($item['price'], 2); ?></strong>
                 </div>
                 <div class="tn-cart-item-qty">
                   <div class="tn-pd-qty tn-cart-qty">
-                    <button type="button" class="tn-qty-btn" data-action="minus" aria-label="Decrease quantity">
-                      <i class="bi bi-dash"></i>
-                    </button>
-                    <input type="number" class="tn-qty-input" value="1" min="1" max="99" data-cart-qty aria-label="Quantity" />
-                    <button type="button" class="tn-qty-btn" data-action="plus" aria-label="Increase quantity">
-                      <i class="bi bi-plus"></i>
-                    </button>
+                    <button type="button" class="tn-qty-btn" data-action="minus">−</button>
+                    <input type="number" class="tn-qty-input" value="<?php echo $item['quantity']; ?>" min="1" max="99" data-cart-qty />
+                    <button type="button" class="tn-qty-btn" data-action="plus">+</button>
                   </div>
-                  <button class="tn-cart-update-btn" data-action="update" aria-label="Update quantity">
-                    <i class="bi bi-arrow-repeat"></i>
-                  </button>
                 </div>
                 <div class="tn-cart-item-total d-none d-lg-flex">
-                  <strong>$1,099</strong>
+                  <strong>$<?php echo number_format($item['total'], 2); ?></strong>
                 </div>
-                <button class="tn-cart-item-remove" data-action="remove" aria-label="Remove item">
+                <button class="tn-cart-item-remove" data-action="remove">
                   <i class="bi bi-x-lg"></i>
                 </button>
               </div>
-
-              <!-- Cart Item 2 -->
-              <div class="tn-cart-item" data-cart-item="2">
-                <div class="tn-cart-item-img">
-                  <a href="product-details.php?id=2">
-                    <img src="https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=300&q=80" alt="Nova Buds Ultra" />
-                  </a>
-                </div>
-                <div class="tn-cart-item-info">
-                  <span class="tn-product-cat">Audio</span>
-                  <h6 class="tn-cart-item-name">
-                    <a href="product-details.php?id=2">Nova Buds Ultra</a>
-                  </h6>
-                  <span class="tn-cart-item-variant">Color: Silver</span>
-                  <span class="tn-cart-item-price-mobile d-lg-none">$249</span>
-                </div>
-                <div class="tn-cart-item-price d-none d-lg-flex">
-                  <strong>$249</strong>
-                </div>
-                <div class="tn-cart-item-qty">
-                  <div class="tn-pd-qty tn-cart-qty">
-                    <button type="button" class="tn-qty-btn" data-action="minus" aria-label="Decrease quantity">
-                      <i class="bi bi-dash"></i>
-                    </button>
-                    <input type="number" class="tn-qty-input" value="2" min="1" max="99" data-cart-qty aria-label="Quantity" />
-                    <button type="button" class="tn-qty-btn" data-action="plus" aria-label="Increase quantity">
-                      <i class="bi bi-plus"></i>
-                    </button>
-                  </div>
-                  <button class="tn-cart-update-btn" data-action="update" aria-label="Update quantity">
-                    <i class="bi bi-arrow-repeat"></i>
-                  </button>
-                </div>
-                <div class="tn-cart-item-total d-none d-lg-flex">
-                  <strong>$498</strong>
-                </div>
-                <button class="tn-cart-item-remove" data-action="remove" aria-label="Remove item">
-                  <i class="bi bi-x-lg"></i>
-                </button>
-              </div>
-
-              <!-- Cart Item 3 -->
-              <div class="tn-cart-item" data-cart-item="3">
-                <div class="tn-cart-item-img">
-                  <a href="product-details.php?id=3">
-                    <img src="https://images.unsplash.com/photo-1546868871-af0de0ae72be?auto=format&fit=crop&w=300&q=80" alt="Nova Watch Series 5" />
-                  </a>
-                </div>
-                <div class="tn-cart-item-info">
-                  <span class="tn-product-cat">Wearables</span>
-                  <h6 class="tn-cart-item-name">
-                    <a href="product-details.php?id=3">Nova Watch Series 5</a>
-                  </h6>
-                  <span class="tn-cart-item-variant">Size: 45mm</span>
-                  <span class="tn-cart-item-price-mobile d-lg-none">$399</span>
-                </div>
-                <div class="tn-cart-item-price d-none d-lg-flex">
-                  <strong>$399</strong>
-                </div>
-                <div class="tn-cart-item-qty">
-                  <div class="tn-pd-qty tn-cart-qty">
-                    <button type="button" class="tn-qty-btn" data-action="minus" aria-label="Decrease quantity">
-                      <i class="bi bi-dash"></i>
-                    </button>
-                    <input type="number" class="tn-qty-input" value="1" min="1" max="99" data-cart-qty aria-label="Quantity" />
-                    <button type="button" class="tn-qty-btn" data-action="plus" aria-label="Increase quantity">
-                      <i class="bi bi-plus"></i>
-                    </button>
-                  </div>
-                  <button class="tn-cart-update-btn" data-action="update" aria-label="Update quantity">
-                    <i class="bi bi-arrow-repeat"></i>
-                  </button>
-                </div>
-                <div class="tn-cart-item-total d-none d-lg-flex">
-                  <strong>$399</strong>
-                </div>
-                <button class="tn-cart-item-remove" data-action="remove" aria-label="Remove item">
-                  <i class="bi bi-x-lg"></i>
-                </button>
-              </div>
-
-            </div>
+              <?php endforeach; ?>
+            <?php else: ?>
+              <script>document.getElementById('tnCartContent').classList.add('d-none'); document.getElementById('tnCartEmpty').classList.remove('d-none');</script>
+            <?php endif; ?>
+         </div>
 
             <!-- Cart Actions Bottom -->
             <div class="tn-cart-actions-bottom">
@@ -209,38 +153,26 @@
               <!-- Dynamic Cart Summary -->
               <div class="tn-cart-summary-rows">
                 <div class="tn-cart-summary-row">
-                  <span>Subtotal (4 items)</span>
-                  <strong>$1,746</strong>
+                  <span>Subtotal (<?php echo $total_items; ?> items)</span>
+                  <strong>$<?php echo number_format($subtotal, 2); ?></strong>
                 </div>
                 <div class="tn-cart-summary-row">
                   <span>Shipping</span>
-                  <span class="tn-cart-shipping">Free</span>
+                  <span class="tn-cart-shipping"><?php echo $shipping == 0 ? 'Free' : '$'.number_format($shipping, 2); ?></span>
                 </div>
                 <div class="tn-cart-summary-row">
                   <span>Tax (8%)</span>
-                  <span>$139.68</span>
-                </div>
-                <!-- Dynamic Discount Row (shown when coupon applied) -->
-                <div class="tn-cart-summary-row tn-cart-discount d-none" id="tnDiscountRow">
-                  <span>Discount</span>
-                  <span class="tn-cart-discount-amount" id="tnDiscountAmount">-$0</span>
+                  <span>$<?php echo number_format($tax, 2); ?></span>
                 </div>
               </div>
 
               <div class="tn-cart-summary-divider"></div>
 
-              <!-- Total -->
-              <!-- Dynamic Totals -->
               <div class="tn-cart-summary-row tn-cart-total-row">
                 <span>Total</span>
-                <strong class="tn-cart-total" id="tnCartTotal">$1,885.68</strong>
+                <strong class="tn-cart-total">$<?php echo number_format($grand_total, 2); ?></strong>
               </div>
-
-              <!-- Checkout Button -->
-              <button class="btn tn-btn-primary tn-cart-checkout" type="button">
-                Proceed to Checkout <i class="bi bi-arrow-right ms-2"></i>
-              </button>
-
+             
               <!-- Trust Signals -->
               <div class="tn-cart-trust">
                 <div class="tn-cart-trust-item">
