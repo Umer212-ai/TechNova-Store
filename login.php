@@ -1,14 +1,37 @@
 <?php
-// login.php - TechNova Store Login Page
-// Backend integration will be added later.
-// include 'includes/config.php';
-// include 'includes/db.php';
+session_start();
+include 'includes/db.php';
 
-// Dynamic User Session: Redirect if already logged in
-// if (isset($_SESSION['user_id'])) {
-//     header('Location: index.php');
-//     exit;
-// }
+if (isset($_SESSION['user_id'])) {
+    header('Location: index.php');
+    exit;
+}
+
+$error = '';
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $email = trim($_POST['email'] ?? '');
+    $password = $_POST['password'] ?? '';
+
+    if (empty($email) || empty($password)) {
+        $error = 'Please fill all fields.';
+    } else {
+        $query = "SELECT * FROM users WHERE email = '$email' LIMIT 1";
+        $result = mysqli_query($conn, $query);
+        $user = mysqli_fetch_assoc($result);
+
+        if ($user && password_verify($password, $user['password'])) {
+            $_SESSION['user_id'] = $user['id'];
+            $_SESSION['user_name'] = $user['full_name'];
+            
+            $redirect = $_GET['redirect'] ?? 'index.php';
+            header('Location: ' . $redirect);
+            exit;
+        } else {
+            $error = 'Invalid email or password.';
+        }
+    }
+}
 ?>
 <?php include 'includes/header.php'; ?>
 <body>
@@ -105,20 +128,26 @@
             </div>
 
             <!-- Dynamic Login Form -->
-            <form class="tn-login-form" id="tnLoginForm" novalidate>
+            <form class="tn-login-form" id="tnLoginForm" method="POST" action="" novalidate>
 
               <!-- Dynamic Validation Messages -->
-              <div class="tn-login-alert d-none" id="tnLoginAlert">
-                <i class="bi bi-exclamation-circle me-2"></i>
-                <span id="tnLoginAlertText"></span>
-              </div>
-
+                    <?php if ($error): ?>
+                      <div class="tn-login-alert" id="tnLoginAlert" style="display:block;">
+                        <i class="bi bi-exclamation-circle me-2"></i>
+                        <span><?php echo $error; ?></span>
+                      </div>
+                    <?php else: ?>
+                      <div class="tn-login-alert d-none" id="tnLoginAlert">
+                        <i class="bi bi-exclamation-circle me-2"></i>
+                        <span id="tnLoginAlertText"></span>
+                      </div>
+                    <?php endif; ?>
               <!-- Email Field -->
               <div class="tn-form-group">
                 <label for="tnLoginEmail" class="tn-form-label">Email Address <span class="tn-required">*</span></label>
                 <div class="tn-login-input-wrap">
                   <i class="bi bi-envelope"></i>
-                  <input type="email" id="tnLoginEmail" class="form-control tn-form-input tn-login-input" placeholder="you@example.com" required autocomplete="email" />
+                  <input type="email" name="email" id="tnLoginEmail" class="form-control tn-form-input tn-login-input" placeholder="you@example.com" required autocomplete="email" />
                 </div>
               </div>
 
@@ -127,7 +156,7 @@
                 <label for="tnLoginPassword" class="tn-form-label">Password <span class="tn-required">*</span></label>
                 <div class="tn-login-input-wrap">
                   <i class="bi bi-lock"></i>
-                  <input type="password" id="tnLoginPassword" class="form-control tn-form-input tn-login-input" placeholder="Enter your password" required autocomplete="current-password" />
+                  <input type="password" name="password" id="tnLoginPassword" class="form-control tn-form-input tn-login-input" placeholder="Enter your password" required autocomplete="current-password" />
                   <button type="button" class="tn-login-eye" id="tnTogglePassword" aria-label="Show password">
                     <i class="bi bi-eye"></i>
                   </button>

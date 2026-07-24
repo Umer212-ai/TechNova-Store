@@ -279,36 +279,48 @@
   }
 
   /* ---------- Delete Modal ---------- */
-  var deleteModal = $('#tnAdminDeleteModal');
-  var modalCancel = $('#tnAdminModalCancel');
-  var modalConfirm = $('#tnAdminModalConfirm');
-  var activeDeleteBtn = null;
+  var productsDeleteModal = $('#tnAdminDeleteModal');
+  var productsModalCancel = $('#tnAdminModalCancel');
+  var productsModalConfirm = $('#tnAdminModalConfirm');
+  var productsActiveDeleteBtn = null;
 
-  function openDeleteModal(btn) {
-    activeDeleteBtn = btn;
-    if (deleteModal) deleteModal.classList.add('open');
+  function openProductsDeleteModal(btn) {
+    productsActiveDeleteBtn = btn;
+    if (productsDeleteModal) productsDeleteModal.classList.add('open');
   }
 
-  function closeDeleteModal() {
-    if (deleteModal) deleteModal.classList.remove('open');
-    activeDeleteBtn = null;
+  function closeProductsDeleteModal() {
+    if (productsDeleteModal) productsDeleteModal.classList.remove('open');
+    productsActiveDeleteBtn = null;
   }
 
-  document.addEventListener('click', function (e) {
-    var btn = e.target.closest('[data-delete]');
-    if (btn) {
-      e.preventDefault();
-      openDeleteModal(btn);
-    }
-  });
-
-  if (modalCancel) modalCancel.addEventListener('click', closeDeleteModal);
-  if (deleteModal) {
-    deleteModal.addEventListener('click', function (e) {
-      if (e.target === deleteModal) closeDeleteModal();
+  // CONFIRM DELETE
+  if (productsModalConfirm) {
+    productsModalConfirm.addEventListener('click', function () {
+      if (productsActiveDeleteBtn) {
+        var id = productsActiveDeleteBtn.getAttribute('data-id');
+        if (id) {
+          window.location.href = 'products.php?delete=' + id;
+        }
+      }
+      closeProductsDeleteModal();
     });
   }
 
+  document.addEventListener('click', function (e) {
+    var btn = e.target.closest('[data-delete="product"]');
+    if (btn) {
+      e.preventDefault();
+      openProductsDeleteModal(btn);
+    }
+  });
+
+  if (productsModalCancel) productsModalCancel.addEventListener('click', closeProductsDeleteModal);
+  if (productsDeleteModal) {
+    productsDeleteModal.addEventListener('click', function (e) {
+      if (e.target === productsDeleteModal) closeProductsDeleteModal();
+    });
+  }
   
 
   /* ---------- Pagination UI ---------- */
@@ -1070,6 +1082,7 @@
     productsActiveDeleteBtn = btn;
     if (productsDeleteModal) productsDeleteModal.classList.add('open');
   }
+  
 
   function closeProductsDeleteModal() {
     if (productsDeleteModal) productsDeleteModal.classList.remove('open');
@@ -1090,6 +1103,7 @@
       if (e.target === productsDeleteModal) closeProductsDeleteModal();
     });
   }
+  
 
  
 
